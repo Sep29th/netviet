@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Indices APIs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .api-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border: 2px solid #e9ecef;
+        }
+        
+        .api-section h3 {
+            margin-top: 0;
+            color: #495057;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .api-url {
+            background: #e9ecef;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin: 10px 0;
+            word-break: break-all;
+            border-left: 4px solid #007bff;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+        
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            color: white;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+        }
+        
+        .btn-success {
+            background: linear-gradient(45deg, #28a745, #1e7e34);
+        }
+        
+        .btn-info {
+            background: linear-gradient(45deg, #17a2b8, #117a8b);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(45deg, #ffc107, #d39e00);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(45deg, #6c757d, #545b62);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        select {
+            padding: 10px 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            min-width: 120px;
+        }
+        
+        .response-section {
+            margin-top: 20px;
+        }
+        
+        .response-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-200 {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-loading {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .response-content {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        
+        .response-content.empty {
+            text-align: center;
+            color: #a0aec0;
+            font-style: italic;
+        }
+        
+        .timing-info {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 10px;
+        }
+        
+        .clear-all {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .api-info {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+        
+        .api-info strong {
+            color: #1565c0;
+        }
+        
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            button, select {
+                width: 100%;
+                margin: 5px 0;
+            }
+            
+            .response-header {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Test Indices APIs</h1>
+        
+        <!-- API 1: Get All Indices -->
+        <div class="api-section">
+            <h3>
+                <span style="background: #28a745; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">GET</span>
+                Lấy tất cả chỉ số
+            </h3>
+            
+            <div class="api-url">
+                GET https://netviet-production.up.railway.app/api/indices
+            </div>
+            
+            <div class="api-info">
+                <strong>Mô tả:</strong> API này trả về danh sách tất cả các chỉ số chứng khoán có sẵn.
+            </div>
+            
+            <div class="controls">
+                <button class="btn-success" onclick="getAllIndices()">
+                    🚀 Gọi API
+                </button>
+                <button class="btn-secondary" onclick="clearResponse('all-response')">
+                    🗑️ Xóa kết quả
+                </button>
+            </div>
+            
+            <div class="response-section">
+                <div class="response-header">
+                    <h4>📋 Kết quả:</h4>
+                    <span id="all-status" class="status-badge" style="display: none;"></span>
+                </div>
+                <div id="all-response" class="response-content empty">
+                    Chưa có dữ liệu. Nhấn "Gọi API" để test.
+                </div>
+                <div id="all-timing" class="timing-info"></div>
+            </div>
+        </div>
+
+        <!-- API 2: Get Specific Index -->
+        <div class="api-section">
+            <h3>
+                <span style="background: #007bff; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">GET</span>
+                Lấy chỉ số cụ thể
+            </h3>
+            
+            <div class="api-url">
+                GET https://netviet-production.up.railway.app/api/indices/<span id="selected-index">:name</span>
+            </div>
+            
+            <div class="api-info">
+                <strong>Mô tả:</strong> API này trả về thông tin chi tiết của một chỉ số cụ thể.<br>
+                <strong>Tham số hợp lệ:</strong> ^DJI, ^GSPC, ^IXIC
+            </div>
+            
+            <div class="controls">
+                <select id="indexSelect" onchange="updateSelectedIndex()">
+                    <option value="">Chọn chỉ số...</option>
+                    <option value="^DJI">^DJI (Dow Jones Industrial Average)</option>
+                    <option value="^GSPC">^GSPC (S&P 500)</option>
+                    <option value="^IXIC">^IXIC (NASDAQ Composite)</option>
+                </select>
+                
+                <button class="btn-primary" onclick="getSpecificIndex()">
+                    🎯 Gọi API
+                </button>
+                
+                <button class="btn-info" onclick="getAllSpecificIndices()">
+                    🔄 Test tất cả
+                </button>
+                
+                <button class="btn-secondary" onclick="clearResponse('specific-response')">
+                    🗑️ Xóa kết quả
+                </button>
+            </div>
+            
+            <div class="response-section">
+                <div class="response-header">
+                    <h4>📊 Kết quả:</h4>
+                    <span id="specific-status" class="status-badge" style="display: none;"></span>
+                </div>
+                <div id="specific-response" class="response-content empty">
+                    Chọn chỉ số và nhấn "Gọi API" để test.
+                </div>
+                <div id="specific-timing" class="timing-info"></div>
+            </div>
+        </div>
+
+        <!-- Clear All Button -->
+        <div class="clear-all">
+            <button class="btn-warning" onclick="clearAllResponses()">
+                🧹 Xóa tất cả kết quả
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = 'https://netviet-production.up.railway.app/api';
+        
+        function updateSelectedIndex() {
+            const select = document.getElementById('indexSelect');
+            const selectedSpan = document.getElementById('selected-index');
+            selectedSpan.textContent = select.value || ':name';
+        }
+
+        function updateStatus(elementId, status, responseTime = null) {
+            const statusEl = document.getElementById(elementId);
+            statusEl.style.display = 'inline-block';
+            
+            if (status === 'loading') {
+                statusEl.textContent = '⏳ Đang tải...';
+                statusEl.className = 'status-badge status-loading';
+            } else if (status >= 200 && status < 300) {
+                statusEl.textContent = `✅ ${status} OK`;
+                statusEl.className = 'status-badge status-200';
+            } else {
+                statusEl.textContent = `❌ ${status} Error`;
+                statusEl.className = 'status-badge status-error';
+            }
+        }
+
+        function updateTiming(elementId, startTime, endTime, url) {
+            const timingEl = document.getElementById(elementId);
+            const duration = endTime - startTime;
+            const timestamp = new Date().toLocaleString('vi-VN');
+            timingEl.innerHTML = `
+                ⏱️ Thời gian: ${duration}ms | 🕐 ${timestamp}<br>
+                🔗 URL: ${url}
+            `;
+        }
+
+        function displayResponse(elementId, data, isError = false) {
+            const responseEl = document.getElementById(elementId);
+            responseEl.className = 'response-content';
+            
+            if (isError) {
+                responseEl.textContent = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+            } else {
+                responseEl.textContent = JSON.stringify(data, null, 2);
+            }
+        }
+
+        function clearResponse(elementId) {
+            const responseEl = document.getElementById(elementId);
+            responseEl.className = 'response-content empty';
+            responseEl.textContent = elementId.includes('all') ? 
+                'Chưa có dữ liệu. Nhấn "Gọi API" để test.' : 
+                'Chọn chỉ số và nhấn "Gọi API" để test.';
+            
+            // Clear status và timing
+            const statusId = elementId.replace('-response', '-status');
+            const timingId = elementId.replace('-response', '-timing');
+            
+            document.getElementById(statusId).style.display = 'none';
+            document.getElementById(timingId).innerHTML = '';
+        }
+
+        function clearAllResponses() {
+            clearResponse('all-response');
+            clearResponse('specific-response');
+        }
+
+        async function makeApiCall(url, statusElementId, responseElementId, timingElementId) {
+            const startTime = Date.now();
+            
+            try {
+                updateStatus(statusElementId, 'loading');
+                
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const endTime = Date.now();
+                const data = await response.json();
+                
+                updateStatus(statusElementId, response.status);
+                updateTiming(timingElementId, startTime, endTime, url);
+                
+                if (response.ok) {
+                    displayResponse(responseElementId, data);
+                } else {
+                    displayResponse(responseElementId, data, true);
+                }
+                
+                return { success: response.ok, data, status: response.status };
+                
+            } catch (error) {
+                const endTime = Date.now();
+                
+                updateStatus(statusElementId, 'ERROR');
+                updateTiming(timingElementId, startTime, endTime, url);
+                displayResponse(responseElementId, `Network Error: ${error.message}`, true);
+                
+                return { success: false, error: error.message };
+            }
+        }
+
+        async function getAllIndices() {
+            const url = `${BASE_URL}/indices`;
+            await makeApiCall(url, 'all-status', 'all-response', 'all-timing');
+        }
+
+        async function getSpecificIndex() {
+            const selectedIndex = document.getElementById('indexSelect').value;
+            
+            if (!selectedIndex) {
+                alert('Vui lòng chọn một chỉ số!');
+                return;
+            }
+            
+            const url = `${BASE_URL}/indices/${encodeURIComponent(selectedIndex)}`;
+            await makeApiCall(url, 'specific-status', 'specific-response', 'specific-timing');
+        }
+
+        async function getAllSpecificIndices() {
+            const indices = ['^DJI', '^GSPC', '^IXIC'];
+            const results = [];
+            
+            updateStatus('specific-status', 'loading');
+            document.getElementById('specific-response').className = 'response-content';
+            document.getElementById('specific-response').textContent = 'Đang test tất cả chỉ số...\n';
+            
+            const startTime = Date.now();
+            
+            for (let i = 0; i < indices.length; i++) {
+                const index = indices[i];
+                const url = `${BASE_URL}/indices/${encodeURIComponent(index)}`;
+                
+                document.getElementById('specific-response').textContent += `\n🔄 Testing ${index}...\n`;
+                
+                try {
+                    const response = await fetch(url);
+                    const data = await response.json();
+                    
+                    results.push({
+                        index: index,
+                        status: response.status,
+                        success: response.ok,
+                        data: response.ok ? data : data
+                    });
+                    
+                    document.getElementById('specific-response').textContent += 
+                        `✅ ${index}: ${response.status} ${response.ok ? 'OK' : 'ERROR'}\n`;
+                        
+                } catch (error) {
+                    results.push({
+                        index: index,
+                        status: 'ERROR',
+                        success: false,
+                        error: error.message
+                    });
+                    
+                    document.getElementById('specific-response').textContent += 
+                        `❌ ${index}: Network Error\n`;
+                }
+            }
+            
+            const endTime = Date.now();
+            
+            // Hiển thị kết quả tổng hợp
+            const successCount = results.filter(r => r.success).length;
+            updateStatus('specific-status', successCount === indices.length ? 200 : 'MIXED');
+            updateTiming('specific-timing', startTime, endTime, 'Multiple URLs');
+            
+            // Hiển thị chi tiết
+            document.getElementById('specific-response').textContent = 
+                `📊 KẾT QUẢ TEST TẤT CẢ CHỈ SỐ\n` +
+                `✅ Thành công: ${successCount}/${indices.length}\n` +
+                `⏱️ Tổng thời gian: ${endTime - startTime}ms\n\n` +
+                `CHI TIẾT:\n${JSON.stringify(results, null, 2)}`;
+        }
+
+        // Auto-update selected index display
+        document.getElementById('indexSelect').addEventListener('change', updateSelectedIndex);
+    </script>
+</body>
+</html>

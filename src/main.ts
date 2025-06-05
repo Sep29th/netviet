@@ -6,8 +6,10 @@ import {
 } from '@nestjs/platform-fastify';
 import fastifyHelmet from '@fastify/helmet';
 import fastifyCompress from '@fastify/compress';
+import fastifyStatic from '@fastify/static';
 import { ResponseFormatFilter } from './common/filters/response-format.filter';
 import { ResponseFormatInterceptor } from './common/interceptors/response-format.interceptor';
+import { join } from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -18,10 +20,13 @@ async function bootstrap() {
   app.useGlobalFilters(new ResponseFormatFilter());
   app.useGlobalInterceptors(new ResponseFormatInterceptor());
   app.enableCors();
-  app.setGlobalPrefix('api');
 
   await app.register(fastifyHelmet);
   await app.register(fastifyCompress, { encodings: ['gzip', 'deflate'] });
+  await app.register(fastifyStatic, {
+    root: join(__dirname, '..', '..', 'src', 'static'),
+    prefix: '/static',
+  });
 
   await app.listen(8080, '0.0.0.0');
 }

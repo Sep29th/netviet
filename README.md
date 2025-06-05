@@ -1,98 +1,108 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 📈 Indices API & WebSocket Gateway
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Hệ thống API và WebSocket Gateway để theo dõi và phân tích các chỉ số chứng khoán real-time.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🔗 Quick Links
 
-## Description
+### 🧪 Test Clients
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- **🌐 API Test Client**: [https://netviet-production.up.railway.app/static/api.html](https://netviet-production.up.railway.app/static/api.html)
+- **⚡ WebSocket Test Client**: [https://netviet-production.up.railway.app/static/socket.html](https://netviet-production.up.railway.app/static/socket.html)
 
-## Project setup
+### 📊 Live APIs
 
-```bash
-$ npm install
+- **Base URL**: `https://netviet-production.up.railway.app`
+- **WebSocket Namespace**: `/indices`
+
+---
+
+## 🚀 REST APIs
+
+### 📋 Get All Indices
+
+Lấy danh sách tất cả các chỉ số chứng khoán có sẵn.
+
+```http
+GET /api/indices
 ```
 
-## Compile and run the project
+### 🎯 Get Specific Index
 
-```bash
-# development
-$ npm run start
+Lấy thông tin chi tiết của một chỉ số cụ thể.
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+```http
+GET /api/indices/:name
 ```
 
-## Run tests
+#### Parameters
 
-```bash
-# unit tests
-$ npm run test
+| Parameter | Type   | Required | Description       |
+| --------- | ------ | -------- | ----------------- |
+| `name`    | string | Yes      | Symbol của chỉ số |
 
-# e2e tests
-$ npm run test:e2e
+#### Valid Symbols
 
-# test coverage
-$ npm run test:cov
+- `^DJI` - Dow Jones Industrial Average
+- `^GSPC` - S&P 500
+- `^IXIC` - NASDAQ Composite
+
+---
+
+## ⚡ WebSocket Gateway
+
+Real-time updates cho các chỉ số chứng khoán qua WebSocket connection.
+
+### 🔌 Connection
+
+```javascript
+const socket = io('https://netviet-production.up.railway.app/indices', {
+  transports: ['websocket', 'polling'],
+  timeout: 30000,
+});
 ```
 
-## Deployment
+#### Configuration
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+- **Namespace**: `/indices`
+- **CORS**: `origin: '*'` (cho development)
+- **Transports**: WebSocket, Polling
+- **Ping Timeout**: 30,000ms
+- **Ping Interval**: 10,000ms
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### 📤 Outgoing Events (Client → Server)
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+#### 1. Subscribe to Index Updates
+
+Subscribe để nhận real-time updates cho một chỉ số cụ thể.
+
+```javascript
+socket.emit('subscribeToIndices', '^DJI');
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+**Parameters:**
 
-## Resources
+- `symbol` (string): Symbol của chỉ số muốn theo dõi
 
-Check out a few resources that may come in handy when working with NestJS:
+#### 2. Unsubscribe from Index Updates
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Hủy subscribe khỏi updates của một chỉ số.
 
-## Support
+```javascript
+socket.emit('unsubscribeFromIndices', '^DJI');
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+**Parameters:**
 
-## Stay in touch
+- `symbol` (string): Symbol của chỉ số muốn hủy theo dõi
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### 📥 Incoming Events (Server → Client)
 
-## License
+#### 1. Indices Updates
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Nhận real-time updates về chỉ số đã subscribe.
+
+```javascript
+socket.on('indicesUpdate', (data) => {
+  console.log('Indices Update:', data);
+});
+```

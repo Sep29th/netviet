@@ -9,7 +9,7 @@ import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
   long: { ttl: 60000, limit: 100 },
 })
 @UseGuards(ThrottlerGuard)
-@Controller({ path: 'indices', version: '1' })
+@Controller({ path: 'api/indices', version: '1' })
 export class IndicesController {
   constructor(private readonly indicesService: IndicesService) {}
 
