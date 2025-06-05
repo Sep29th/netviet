@@ -10,6 +10,7 @@ import fastifyStatic from '@fastify/static';
 import { ResponseFormatFilter } from './common/filters/response-format.filter';
 import { ResponseFormatInterceptor } from './common/interceptors/response-format.interceptor';
 import { join } from 'path';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -19,6 +20,7 @@ async function bootstrap() {
 
   app.useGlobalFilters(new ResponseFormatFilter());
   app.useGlobalInterceptors(new ResponseFormatInterceptor());
+  app.useGlobalPipes(new ValidationPipe());
   app.enableCors();
 
   await app.register(fastifyHelmet, {
