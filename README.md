@@ -23,7 +23,8 @@ Hệ thống API và WebSocket Gateway để theo dõi và phân tích các ch�
 Lấy danh sách tất cả các chỉ số chứng khoán có sẵn.
 
 ```http
-GET /api/indices
+GET /api/indices?page=1&limit=10
+// default value: page = 1, limit = 10
 ```
 
 #### Response Example
@@ -74,7 +75,8 @@ GET /api/indices
 Lấy thông tin chi tiết của một chỉ số cụ thể.
 
 ```http
-GET /api/indices/:name
+GET /api/indices/:name?page=1&limit=10
+// default value: page = 1, limit = 10
 ```
 
 #### Parameters

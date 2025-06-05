@@ -36,6 +36,8 @@
     "@nestjs/throttler": "^6.4.0",
     "@nestjs/websockets": "^11.1.2",
     "axios": "^1.9.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.2",
     "fastify": "^5.3.3",
     "http-status-codes": "^2.3.0",
     "mongoose": "^8.15.1",

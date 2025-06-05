@@ -85,22 +85,52 @@ export class IndicesService {
     };
   }
 
-  async getIndices() {
-    const indices = await this.indicesModel
-      .find()
-      .sort({ timestamp: -1 })
-      .exec();
+  async getIndices(page: number, limit: number) {
+    const [indices, total] = await Promise.all([
+      this.indicesModel
+        .find()
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .sort({ timestamp: -1 })
+        .exec(),
+      this.indicesModel.countDocuments().exec(),
+    ]);
 
-    return indices;
+    return {
+      data: indices,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+        hasNextPage: page < Math.ceil(total / limit),
+        hasPreviousPage: page > 1,
+      },
+    };
   }
 
-  async getIndicesBySymbol(symbol: string) {
-    const indices = await this.indicesModel
-      .find({ symbol })
-      .sort({ timestamp: -1 })
-      .exec();
+  async getIndicesBySymbol(symbol: string, page: number, limit: number) {
+    const [indices, total] = await Promise.all([
+      this.indicesModel
+        .find({ symbol })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .sort({ timestamp: -1 })
+        .exec(),
+      this.indicesModel.countDocuments({ symbol }).exec(),
+    ]);
 
-    return indices;
+    return {
+      data: indices,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+        hasNextPage: page < Math.ceil(total / limit),
+        hasPreviousPage: page > 1,
+      },
+    };
   }
 
   getAnalyticsData(symbol: string) {

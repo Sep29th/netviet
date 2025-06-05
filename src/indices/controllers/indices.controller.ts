@@ -1,7 +1,8 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { IndicesService } from '../services/indices.service';
 import { SupportedSymbolsGuard } from '../guards/supported-symbols.guard';
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
+import { PaginationQueryDTO } from '../dtos/pagination-query.dto';
 
 @Throttle({
   short: { ttl: 1000, limit: 3 },
@@ -14,14 +15,24 @@ export class IndicesController {
   constructor(private readonly indicesService: IndicesService) {}
 
   @Get()
-  async getIndices() {
-    return await this.indicesService.getIndices();
+  async getIndices(@Query() paginationQueryDto: PaginationQueryDTO) {
+    return await this.indicesService.getIndices(
+      paginationQueryDto.page,
+      paginationQueryDto.limit,
+    );
   }
 
   @Get(':name')
   @UseGuards(SupportedSymbolsGuard)
-  async getIndicesByName(@Param('name') symbol: string) {
-    const indices = await this.indicesService.getIndicesBySymbol(symbol);
+  async getIndicesByName(
+    @Param('name') symbol: string,
+    @Query() paginationQueryDto: PaginationQueryDTO,
+  ) {
+    const indices = await this.indicesService.getIndicesBySymbol(
+      symbol,
+      paginationQueryDto.page,
+      paginationQueryDto.limit,
+    );
 
     const analysis = this.indicesService.getAnalyticsData(symbol);
 
