@@ -6,7 +6,7 @@ import { SupportedSymbolsGuard } from './guards/supported-symbols.guard';
 import { CrawlerModule } from 'src/crawler/crawler.module';
 
 @Module({
-  imports: [CrawlerModule],
+  imports: [CrawlerModule.forRoot()],
   providers: [SupportedSymbolsGuard, IndicesService, IndicesGateway],
   controllers: [IndicesController],
   exports: [IndicesService, IndicesGateway],
