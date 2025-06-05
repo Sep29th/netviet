@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import CircuitBreaker from 'opossum';
+import * as CircuitBreaker from 'opossum';
 import { Logger } from 'src/common/services/logger.service';
 
 @Injectable()
