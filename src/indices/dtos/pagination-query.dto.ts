@@ -16,4 +16,4 @@ export class PaginationQueryDTO {
   limit: number = 10;
 }
 
-// Không dùng vì deploy bị out memory
+// KHÔNG DÙNG VÌ DEPLOY BỊ OUT MEMORY
