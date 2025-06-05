@@ -1,0 +1,43 @@
+import { FormattedValue } from './formatted-value.type';
+
+export interface Price {
+  maxAge: number;
+  preMarketChange: FormattedValue | object;
+  preMarketPrice: FormattedValue | object;
+  postMarketChange: FormattedValue | object;
+  postMarketPrice: FormattedValue | object;
+  regularMarketChangePercent: FormattedValue;
+  regularMarketChange: FormattedValue;
+  regularMarketTime: number;
+  priceHint: FormattedValue;
+  regularMarketPrice: FormattedValue;
+  regularMarketDayHigh: FormattedValue;
+  regularMarketDayLow: FormattedValue;
+  regularMarketVolume: FormattedValue;
+  averageDailyVolume10Day: FormattedValue;
+  averageDailyVolume3Month: FormattedValue;
+  regularMarketPreviousClose: FormattedValue;
+  regularMarketSource: string;
+  regularMarketOpen: FormattedValue;
+  strikePrice: FormattedValue | object;
+  openInterest: FormattedValue | object;
+  exchange: string;
+  exchangeName: string;
+  exchangeDataDelayedBy: number;
+  marketState: string;
+  quoteType: string;
+  symbol: string;
+  underlyingSymbol: string | null;
+  shortName: string;
+  longName: string;
+  currency: string;
+  quoteSourceName: string;
+  currencySymbol: string;
+  fromCurrency: string | null;
+  toCurrency: string | null;
+  lastMarket: string | null;
+  volume24Hr: FormattedValue | object;
+  volumeAllCurrencies: FormattedValue | object;
+  circulatingSupply: FormattedValue | object;
+  marketCap: FormattedValue | object;
+}
