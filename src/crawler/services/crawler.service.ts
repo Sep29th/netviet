@@ -1,14 +1,10 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { AxiosInstance } from 'axios';
 import { AxiosCircuitBreakerService } from './axios-circuit-breaker.service';
 import { Logger } from 'src/common/services/logger.service';
 
 @Injectable()
 export class CrawlerService implements OnModuleInit {
   constructor(
-    private readonly configService: ConfigService,
-    @Inject('AXIOS_INSTANCE') private readonly axiosInstance: AxiosInstance,
     @Inject('AXIOS_ATTACH_INFO')
     private readonly axiosAttachInfo: { cookies: string; crumb: string },
     private readonly axiosCircuitBreakerService: AxiosCircuitBreakerService,

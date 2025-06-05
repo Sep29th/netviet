@@ -5,7 +5,6 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { ConfigService } from '@nestjs/config';
-import { VersioningType } from '@nestjs/common';
 import fastifyHelmet from '@fastify/helmet';
 import fastifyCompress from '@fastify/compress';
 import { ResponseFormatFilter } from './common/filters/response-format.filter';
@@ -22,11 +21,7 @@ async function bootstrap() {
   app.useGlobalFilters(new ResponseFormatFilter());
   app.useGlobalInterceptors(new ResponseFormatInterceptor());
   app.enableCors();
-  app.enableVersioning({
-    type: VersioningType.HEADER,
-    header: 'Accept-Version',
-    defaultVersion: '1',
-  });
+  app.setGlobalPrefix('api');
 
   await app.register(fastifyHelmet);
   await app.register(fastifyCompress, { encodings: ['gzip', 'deflate'] });

@@ -120,8 +120,8 @@ export class IndicesService {
   }
 
   private getAverageOfLastPreviousClosePrices(symbol: string) {
-    const prices = this.lastPreviousClosePrices.value.map(
-      (item) => item[symbol],
+    const prices = this.lastPreviousClosePrices.value.map((item) =>
+      item[symbol] !== undefined ? item[symbol] : undefined,
     );
     const validPrices = prices.filter((price) => price !== undefined);
     if (validPrices.length === 0) return undefined;
