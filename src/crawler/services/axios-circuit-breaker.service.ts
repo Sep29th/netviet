@@ -4,6 +4,7 @@ import { AxiosInstance, AxiosResponse } from 'axios';
 import { CircuitBreakerService } from 'src/common/modules/circuit-breaker/services/circuit-breaker.service';
 import config from '../../config';
 import { QuoteSummaryResponse } from '../types/quote-summary-response.type';
+import { YahooFinanceChartResponse } from '../types/char-response.type';
 
 @Injectable()
 export class AxiosCircuitBreakerService implements OnModuleInit {
@@ -31,6 +32,12 @@ export class AxiosCircuitBreakerService implements OnModuleInit {
     this.circuitBreakerService.createCircuitBreaker(
       'axios.getQuote',
       () => this.getQuoteBase(),
+      undefined,
+      () => false,
+    );
+    this.circuitBreakerService.createCircuitBreaker(
+      'axios.getHistoryPrice',
+      (symbol: string) => this.getHistoryPriceBase(symbol),
       undefined,
       () => false,
     );
@@ -66,6 +73,15 @@ export class AxiosCircuitBreakerService implements OnModuleInit {
     );
   }
 
+  private async getHistoryPriceBase(symbol: string) {
+    return await this.axiosInstance.get(
+      `${this.configService.get<string>(
+        'YAHOO_CHART_URL',
+        'https://query2.finance.yahoo.com/v8/finance/chart/',
+      )}${symbol}?range=${config.numberOfRecordsToAverage}d&interval=1d&includePrePost=false`,
+    );
+  }
+
   async getInitCookies() {
     return await this.circuitBreakerService.exec<AxiosResponse<void> | false>(
       'axios.getInitCookies',
@@ -82,5 +98,11 @@ export class AxiosCircuitBreakerService implements OnModuleInit {
     return await this.circuitBreakerService.exec<
       AxiosResponse<QuoteSummaryResponse> | false
     >('axios.getQuote');
+  }
+
+  async getHistoryPrice(symbol: string) {
+    return await this.circuitBreakerService.exec<
+      AxiosResponse<YahooFinanceChartResponse> | false
+    >('axios.getHistoryPrice', symbol);
   }
 }

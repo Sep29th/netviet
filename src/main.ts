@@ -21,7 +21,26 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ResponseFormatInterceptor());
   app.enableCors();
 
-  await app.register(fastifyHelmet);
+  await app.register(fastifyHelmet, {
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          "'unsafe-eval'",
+          'https://cdnjs.cloudflare.com',
+        ],
+        scriptSrcAttr: ["'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", 'data:', 'https:'],
+        connectSrc: ["'self'", 'ws:', 'wss:'],
+        fontSrc: ["'self'"],
+        objectSrc: ["'none'"],
+        mediaSrc: ["'self'"],
+      },
+    },
+  });
   await app.register(fastifyCompress, { encodings: ['gzip', 'deflate'] });
   await app.register(fastifyStatic, {
     root: join(__dirname, '..', '..', 'src', 'static'),

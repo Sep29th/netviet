@@ -23,15 +23,17 @@ export class ScheduleCrawService {
 
       await this.indicesService.updateNewData(data);
 
-      const analysisData = data.map((item) => ({
-        symbol: item.price.symbol,
-        name: item.price.longName,
-        currentPrice: item.price.regularMarketPrice.raw ?? 0,
-        ...this.indicesService.analyzeIndicesData(
-          item.price.symbol,
-          item.price.regularMarketPrice.raw ?? 0,
-        ),
-      }));
+      const analysisData = await Promise.all(
+        data.map(async (item) => ({
+          symbol: item.price.symbol,
+          name: item.price.longName,
+          currentPrice: item.price.regularMarketPrice.raw ?? 0,
+          ...(await this.indicesService.analyzeIndicesData(
+            item.price.symbol,
+            item.price.regularMarketPrice.raw ?? 0,
+          )),
+        })),
+      );
 
       analysisData.forEach((item) => {
         this.indicesGateway.broadcastToIndices(item.symbol, {

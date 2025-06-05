@@ -1,45 +1,44 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Connection, Model } from 'mongoose';
-import config from '../../config';
 import { QuoteResult } from 'src/crawler/types/quote-result.type';
 import { Indices } from 'src/mongo/schemas/indices.schema';
 import { RecommendationMessage } from '../types/recommendation';
 import { Logger } from 'src/common/services/logger.service';
+import { AxiosCircuitBreakerService } from 'src/crawler/services/axios-circuit-breaker.service';
 
 @Injectable()
 export class IndicesService {
   constructor(
-    @Inject('LAST_PREVIOUS_CLOSE_PRICES')
-    private readonly lastPreviousClosePrices: {
-      value: { [key: string]: number }[];
-      index: number;
-    },
     @InjectModel(Indices.name)
     private readonly indicesModel: Model<Indices>,
     @InjectConnection()
     private readonly connection: Connection,
     private readonly logger: Logger,
+    private readonly axiosCircuitBreakerService: AxiosCircuitBreakerService,
   ) {}
 
   async updateNewData(data: QuoteResult[]) {
     const session = await this.connection.startSession();
     session.startTransaction();
     try {
-      await this.indicesModel.insertMany(
-        data.map((item) => ({
-          symbol: item.price.symbol,
-          name: item.price.longName,
-          currency: item.price.currency,
-          currentPrice: item.price.regularMarketPrice.raw,
-          openPrice: item.price.regularMarketOpen.raw,
-          hightPrice: item.summaryDetail.fiftyTwoWeekHigh.raw,
-          lowPrice: item.summaryDetail.fiftyTwoWeekLow.raw,
-          changePercent: item.price.regularMarketChangePercent.raw,
-          timestamp: new Date(item.price.regularMarketTime * 1000),
-        })),
-        { session },
-      );
+      const docs = data.map((item) => ({
+        symbol: item.price.symbol,
+        name: item.price.longName,
+        currency: item.price.currency,
+        currentPrice: item.price.regularMarketPrice.raw,
+        openPrice: item.price.regularMarketOpen.raw,
+        hightPrice: item.summaryDetail.fiftyTwoWeekHigh.raw,
+        lowPrice: item.summaryDetail.fiftyTwoWeekLow.raw,
+        changePercent: item.price.regularMarketChangePercent.raw,
+        timestamp: new Date(item.price.regularMarketTime * 1000),
+      }));
+
+      await this.indicesModel.insertMany(docs, {
+        session,
+        ordered: false,
+      });
+
       await session.commitTransaction();
     } catch (error: unknown) {
       if (typeof error === 'string') {
@@ -54,21 +53,11 @@ export class IndicesService {
     } finally {
       await session.endSession();
     }
-
-    const newData: { [key: string]: number } = {};
-    data.forEach((item) => {
-      const symbol = item.price.symbol;
-      const previousClose = item.summaryDetail.previousClose.raw;
-      if (symbol && previousClose) {
-        newData[symbol] = previousClose;
-      }
-    });
-    this.addNewDataToLastPreviousClosePrices(newData);
   }
 
-  analyzeIndicesData(symbol: string, currentPrice: number) {
+  async analyzeIndicesData(symbol: string, currentPrice: number) {
     const averagePreviousClose =
-      this.getAverageOfLastPreviousClosePrices(symbol);
+      await this.getAverageOfLastPreviousClosePrices(symbol);
 
     if (averagePreviousClose === undefined) {
       return {
@@ -111,21 +100,24 @@ export class IndicesService {
     return indices;
   }
 
-  private addNewDataToLastPreviousClosePrices(data: { [key: string]: number }) {
-    this.lastPreviousClosePrices.value[this.lastPreviousClosePrices.index] =
-      data;
-    this.lastPreviousClosePrices.index =
-      (this.lastPreviousClosePrices.index + 1) %
-      config.numberOfRecordsToAverage;
-  }
+  private async getAverageOfLastPreviousClosePrices(symbol: string) {
+    const res = await this.axiosCircuitBreakerService.getHistoryPrice(symbol);
 
-  private getAverageOfLastPreviousClosePrices(symbol: string) {
-    const prices = this.lastPreviousClosePrices.value.map(
-      (item) => item?.[symbol],
-    );
-    const validPrices = prices.filter((price) => price !== undefined);
-    if (validPrices.length === 0) return undefined;
-    const sum = validPrices.reduce((acc, price) => acc + price, 0);
-    return sum / validPrices.length;
+    if (res === false || !res.data.chart || !res.data.chart.result) {
+      this.logger.error(`Failed to fetch history price for symbol: ${symbol}`);
+      return undefined;
+    }
+
+    const closePrice = res.data.chart.result[0].indicators.quote[0].close;
+
+    if (!closePrice || closePrice.length === 0) {
+      this.logger.error(`No close prices found for symbol: ${symbol}`);
+      return undefined;
+    }
+
+    const sum = closePrice.reduce((acc, price) => acc + price, 0);
+    const average = sum / closePrice.length;
+
+    return parseFloat(average.toFixed(2));
   }
 }

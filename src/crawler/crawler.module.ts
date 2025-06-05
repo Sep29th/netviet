@@ -62,6 +62,7 @@ export class CrawlerModule {
         CrawlerService,
         ScheduleCrawService,
       ],
+      exports: [AxiosCircuitBreakerService],
     };
   }
 }

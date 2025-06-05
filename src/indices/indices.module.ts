@@ -1,23 +1,13 @@
 import { Module } from '@nestjs/common';
 import { IndicesService } from './services/indices.service';
-import config from '../config';
 import { IndicesController } from './controllers/indices.controller';
 import { IndicesGateway } from './gateways/indices.gateway';
 import { SupportedSymbolsGuard } from './guards/supported-symbols.guard';
+import { CrawlerModule } from 'src/crawler/crawler.module';
 
 @Module({
-  providers: [
-    {
-      provide: 'LAST_PREVIOUS_CLOSE_PRICES',
-      useValue: {
-        value: Array(config.numberOfRecordsToAverage).fill(undefined),
-        index: 0,
-      },
-    },
-    SupportedSymbolsGuard,
-    IndicesService,
-    IndicesGateway,
-  ],
+  imports: [CrawlerModule],
+  providers: [SupportedSymbolsGuard, IndicesService, IndicesGateway],
   controllers: [IndicesController],
   exports: [IndicesService, IndicesGateway],
 })

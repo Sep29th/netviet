@@ -26,6 +26,48 @@ Lấy danh sách tất cả các chỉ số chứng khoán có sẵn.
 GET /api/indices
 ```
 
+#### Response Example
+```json
+{
+  "path": "/api/indices",
+  "timestamp": "2025-06-05T12:01:48.123Z",
+  "statusCode": 200,
+  "message": "OK",
+  "success": [
+    {
+      "_id": "68417f405cce7c9df88f228d",
+      "symbol": "^IXIC",
+      "name": "NASDAQ Composite",
+      "currency": "USD",
+      "currentPrice": 19460.488,
+      "openPrice": 19434.9,
+      "hightPrice": 20204.58,
+      "lowPrice": 14784.03,
+      "changePercent": 0.0031718845,
+      "timestamp": "2025-06-04T21:15:59.000Z",
+      "__v": 0,
+      "createdAt": "2025-06-05T11:28:00.064Z",
+      "updatedAt": "2025-06-05T11:28:00.064Z"
+    },
+    {
+      "_id": "684180305cce7c9df88f2291",
+      "symbol": "^IXIC",
+      "name": "NASDAQ Composite",
+      "currency": "USD",
+      "currentPrice": 19460.488,
+      "openPrice": 19434.9,
+      "hightPrice": 20204.58,
+      "lowPrice": 14784.03,
+      "changePercent": 0.0031718845,
+      "timestamp": "2025-06-04T21:15:59.000Z",
+      "__v": 0,
+      "createdAt": "2025-06-05T11:32:00.054Z",
+      "updatedAt": "2025-06-05T11:32:00.054Z"
+    }
+  ]
+}
+```
+
 ### 🎯 Get Specific Index
 
 Lấy thông tin chi tiết của một chỉ số cụ thể.
@@ -45,6 +87,65 @@ GET /api/indices/:name
 - `^DJI` - Dow Jones Industrial Average
 - `^GSPC` - S&P 500
 - `^IXIC` - NASDAQ Composite
+
+#### Response Example
+```json
+{
+  "path": "/api/indices/%5EDJI",
+  "timestamp": "2025-06-05T12:02:53.440Z",
+  "statusCode": 200,
+  "message": "OK",
+  "success": {
+    "analysis": {
+      "comparisonPercentage": 99.78,
+      "recommendation": "Not recommended"
+    },
+    "indices": [
+      {
+        "_id": "68417f405cce7c9df88f228b",
+        "symbol": "^DJI",
+        "name": "Dow Jones Industrial Average",
+        "currency": "USD",
+        "currentPrice": 42427.74,
+        "openPrice": 42574.1,
+        "hightPrice": 45073.63,
+        "lowPrice": 36611.78,
+        "changePercent": -0.0021614092,
+        "timestamp": "2025-06-04T20:57:23.000Z",
+        "__v": 0,
+        "createdAt": "2025-06-05T11:28:00.064Z",
+        "updatedAt": "2025-06-05T11:28:00.064Z"
+      },
+      {
+        "_id": "684180305cce7c9df88f228f",
+        "symbol": "^DJI",
+        "name": "Dow Jones Industrial Average",
+        "currency": "USD",
+        "currentPrice": 42427.74,
+        "openPrice": 42574.1,
+        "hightPrice": 45073.63,
+        "lowPrice": 36611.78,
+        "changePercent": -0.0021614092,
+        "timestamp": "2025-06-04T20:57:23.000Z",
+        "__v": 0,
+        "createdAt": "2025-06-05T11:32:00.053Z",
+        "updatedAt": "2025-06-05T11:32:00.053Z"
+      }
+    ]
+  }
+}
+```
+
+#### Error Response
+```json
+{
+  "path": "/api/indices/%5EABC",
+  "timestamp": "2025-06-05T12:04:10.157Z",
+  "statusCode": 400,
+  "message": "Symbol ^ABC is not supported.",
+  "error": "Bad Request"
+}
+```
 
 ---
 
@@ -105,4 +206,18 @@ Nhận real-time updates về chỉ số đã subscribe.
 socket.on('indicesUpdate', (data) => {
   console.log('Indices Update:', data);
 });
+```
+
+**Example Data:**
+```json
+{
+  "indices": {
+    "name": "Dow Jones Industrial Average",
+    "currentPrice": 42427.74
+  },
+  "analysis": {
+    "comparisonPercentage": 99.78,
+    "recommendation": "Not recommended"
+  }
+}
 ```

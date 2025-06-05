@@ -37,5 +37,5 @@ export class Indices {
 }
 
 export const IndicesSchema = SchemaFactory.createForClass(Indices);
-IndicesSchema.index({ symbol: 1, timestamp: -1 });
+IndicesSchema.index({ symbol: 1, timestamp: -1 }, { unique: true });
 IndicesSchema.index({ timestamp: -1 });
