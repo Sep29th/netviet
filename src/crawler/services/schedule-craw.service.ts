@@ -1,13 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { CrawlerService } from './crawler.service';
 import { IndicesService } from 'src/indices/services/indices.service';
 import { IndicesGateway } from 'src/indices/gateways/indices.gateway';
 import { Logger } from 'src/common/services/logger.service';
+import { AnalizedData } from '../types/analized-data.type';
 
 @Injectable()
 export class ScheduleCrawService {
   constructor(
+    @Inject('ANALYTICS_DATA')
+    private analysisData: AnalizedData,
     private readonly crawlerService: CrawlerService,
     private readonly indicesService: IndicesService,
     private readonly indicesGateway: IndicesGateway,
@@ -23,7 +26,7 @@ export class ScheduleCrawService {
 
       await this.indicesService.updateNewData(data);
 
-      const analysisData = await Promise.all(
+      this.analysisData = await Promise.all(
         data.map(async (item) => ({
           symbol: item.price.symbol,
           name: item.price.longName,
@@ -35,7 +38,7 @@ export class ScheduleCrawService {
         })),
       );
 
-      analysisData.forEach((item) => {
+      this.analysisData.forEach((item) => {
         this.indicesGateway.broadcastToIndices(item.symbol, {
           indices: {
             name: item.name,

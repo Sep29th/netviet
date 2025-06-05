@@ -27,6 +27,7 @@ GET /api/indices
 ```
 
 #### Response Example
+
 ```json
 {
   "path": "/api/indices",
@@ -89,6 +90,7 @@ GET /api/indices/:name
 - `^IXIC` - NASDAQ Composite
 
 #### Response Example
+
 ```json
 {
   "path": "/api/indices/%5EDJI",
@@ -137,6 +139,7 @@ GET /api/indices/:name
 ```
 
 #### Error Response
+
 ```json
 {
   "path": "/api/indices/%5EABC",
@@ -151,7 +154,7 @@ GET /api/indices/:name
 
 ## ⚡ WebSocket Gateway
 
-Real-time updates cho các chỉ số chứng khoán qua WebSocket connection.
+Real-time updates cho các chỉ số chứng khoán qua WebSocket connection, được crawler làm mới 4 phút 1 lần.
 
 ### 🔌 Connection
 
@@ -209,6 +212,7 @@ socket.on('indicesUpdate', (data) => {
 ```
 
 **Example Data:**
+
 ```json
 {
   "indices": {
@@ -219,5 +223,16 @@ socket.on('indicesUpdate', (data) => {
     "comparisonPercentage": 99.78,
     "recommendation": "Not recommended"
   }
+}
+```
+
+#### Error Message
+
+```json
+{
+  "event": "subscribeToIndices",
+  "message": "Index ^ABC is not supported. Valid indices: ^DJI, ^IXIC, ^GSPC}",
+  "code": "INVALID_INDEX",
+  "validIndices": ["^DJI", "^IXIC", "^GSPC"]
 }
 ```

@@ -23,10 +23,7 @@ export class IndicesController {
   async getIndicesByName(@Param('name') symbol: string) {
     const indices = await this.indicesService.getIndicesBySymbol(symbol);
 
-    const analysis = await this.indicesService.analyzeIndicesData(
-      symbol,
-      indices[0].currentPrice ?? 0,
-    );
+    const analysis = this.indicesService.getAnalyticsData(symbol);
 
     return {
       analysis,

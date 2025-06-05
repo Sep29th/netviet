@@ -15,6 +15,10 @@ export class CrawlerModule {
       controllers: [],
       providers: [
         {
+          provide: 'ANALYTICS_DATA',
+          useValue: [],
+        },
+        {
           provide: 'AXIOS_ATTACH_INFO',
           useValue: { cookies: '', crumb: '' },
         },
@@ -62,7 +66,7 @@ export class CrawlerModule {
         CrawlerService,
         ScheduleCrawService,
       ],
-      exports: [AxiosCircuitBreakerService],
+      exports: [AxiosCircuitBreakerService, 'ANALYTICS_DATA'],
     };
   }
 }

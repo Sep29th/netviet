@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Connection, Model } from 'mongoose';
 import { QuoteResult } from 'src/crawler/types/quote-result.type';
@@ -6,10 +6,13 @@ import { Indices } from 'src/mongo/schemas/indices.schema';
 import { RecommendationMessage } from '../types/recommendation';
 import { Logger } from 'src/common/services/logger.service';
 import { AxiosCircuitBreakerService } from 'src/crawler/services/axios-circuit-breaker.service';
+import { AnalizedData } from 'src/crawler/types/analized-data.type';
 
 @Injectable()
 export class IndicesService {
   constructor(
+    @Inject('ANALYTICS_DATA')
+    private readonly analysisData: AnalizedData,
     @InjectModel(Indices.name)
     private readonly indicesModel: Model<Indices>,
     @InjectConnection()
@@ -98,6 +101,30 @@ export class IndicesService {
       .exec();
 
     return indices;
+  }
+
+  getAnalyticsData(symbol: string) {
+    const analized = this.analysisData.find((item) => item.symbol === symbol);
+
+    return {
+      comparisonPercentage: analized?.comparisonPercentage ?? null,
+      recommendation: analized?.recommendation ?? RecommendationMessage.NOT,
+    };
+  }
+
+  getAnalyticsDataWithIndice(symbol: string) {
+    const analized = this.analysisData.find((item) => item.symbol === symbol);
+
+    if (!analized)
+      return {
+        comparisonPercentage: null,
+        recommendation: RecommendationMessage.NOT,
+        symbol,
+        name: '',
+        currentPrice: -1,
+      };
+
+    return analized;
   }
 
   private async getAverageOfLastPreviousClosePrices(symbol: string) {
