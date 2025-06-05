@@ -12,7 +12,7 @@ import { AnalizedData } from 'src/crawler/types/analized-data.type';
 export class IndicesService {
   constructor(
     @Inject('ANALYTICS_DATA')
-    private readonly analysisData: AnalizedData,
+    private readonly analysisData: { value: AnalizedData },
     @InjectModel(Indices.name)
     private readonly indicesModel: Model<Indices>,
     @InjectConnection()
@@ -64,7 +64,7 @@ export class IndicesService {
 
     if (averagePreviousClose === undefined) {
       return {
-        comparisonPercentage: null,
+        comparisonPercentage: 'No data yet',
         recommendation: RecommendationMessage.NOT,
       };
     }
@@ -104,20 +104,24 @@ export class IndicesService {
   }
 
   getAnalyticsData(symbol: string) {
-    const analized = this.analysisData.find((item) => item.symbol === symbol);
+    const analized = this.analysisData.value.find(
+      (item) => item.symbol === symbol,
+    );
 
     return {
-      comparisonPercentage: analized?.comparisonPercentage ?? null,
+      comparisonPercentage: analized?.comparisonPercentage ?? 'No data yet',
       recommendation: analized?.recommendation ?? RecommendationMessage.NOT,
     };
   }
 
   getAnalyticsDataWithIndice(symbol: string) {
-    const analized = this.analysisData.find((item) => item.symbol === symbol);
+    const analized = this.analysisData.value.find(
+      (item) => item.symbol === symbol,
+    );
 
     if (!analized)
       return {
-        comparisonPercentage: null,
+        comparisonPercentage: 'No data yet',
         recommendation: RecommendationMessage.NOT,
         symbol,
         name: '',

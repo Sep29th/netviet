@@ -16,7 +16,7 @@ export class CrawlerModule {
       providers: [
         {
           provide: 'ANALYTICS_DATA',
-          useValue: [],
+          useValue: { value: [] },
         },
         {
           provide: 'AXIOS_ATTACH_INFO',

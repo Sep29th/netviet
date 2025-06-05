@@ -31,7 +31,7 @@ export class IndicesGateway {
     data: {
       indices: { name: string; currentPrice: number };
       analysis: {
-        comparisonPercentage: null | number;
+        comparisonPercentage: string | number;
         recommendation: RecommendationMessage;
       };
     },
